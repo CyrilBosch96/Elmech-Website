@@ -2,16 +2,23 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="bg-[#1e3a5f] text-white relative overflow-hidden">
-      {/* Subtle industrial grid overlay */}
+    <section className="text-white relative overflow-hidden">
+      {/* Crane wireframe background */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 opacity-5"
+        className="absolute inset-0"
         style={{
-          backgroundImage:
-            "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+          backgroundImage: "url('/hero-crane.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
+      />
+      {/* Dark blue overlay to keep text readable */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(135deg, rgba(18,42,72,0.97) 0%, rgba(20,50,85,0.94) 55%, rgba(15,35,60,0.88) 100%)" }}
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">

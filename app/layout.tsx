@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import HoistDemo from "@/components/landing/HoistDemo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,13 +33,13 @@ export const metadata: Metadata = {
     "industrial safety equipment",
     "Indef clinic service center",
   ],
-  metadataBase: new URL("https://elmech-equipment.vercel.app"),
+  metadataBase: new URL("https://elmechequipment.com"),
   authors: [{ name: "Elmech Equipment Company" }],
   creator: "Elmech Equipment Company",
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://elmech-equipment.vercel.app",
+    url: "https://elmechequipment.com",
     siteName: "Elmech Equipment Company",
     title:
       "Elmech Equipment Company | Material Handling Equipment Specialists",
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
   alternates: {
-    canonical: "https://elmech-equipment.vercel.app",
+    canonical: "https://elmechequipment.com",
   },
 };
 
@@ -77,6 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased">
+        <HoistDemo />
         <Header />
         <main>{children}</main>
         <Footer />
