@@ -1,44 +1,48 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
   {
-    title: "Hoists",
-    icon: "⛓️",
-    items: ["Electric Chain Hoists", "Wire Rope Hoists", "Hoist Spare Parts"],
+    title: "Electric Chain Hoists",
+    image: "/iR-HOIST.png",
+    items: ["iR Hoist Series", "Electric Chain Hoists", "Variable Speed Hoists"],
     description:
-      "Industrial-grade hoists for continuous duty applications in demanding environments.",
+      "Compact electric chain hoists with precise load control for industrial and commercial lifting applications.",
   },
   {
-    title: "Lifting Equipment",
-    icon: "🔧",
-    items: ["Chain Pulley Blocks", "Lifting Accessories"],
+    title: "Wire Rope Hoists (HW)",
+    image: "/HW-WIRE-ROPE-HOIST.png",
+    items: ["HW Hoist Series", "Wire Rope Hoists", "Heavy-Duty Lifting"],
     description:
-      "Reliable lifting solutions designed for safe and efficient load handling.",
+      "Heavy-duty wire rope hoists engineered for continuous operation in demanding industrial environments.",
   },
   {
-    title: "Crane Components",
-    icon: "🏗️",
-    items: ["Brake Drums", "Thruster Brakes", "Limit Switches", "Anti-Collision Devices"],
+    title: "Wire Rope Hoists (WRH)",
+    image: "/WRH-I-II-III.png",
+    items: ["WRH I / II / III Series", "High-Capacity Hoists", "Twin Motor Hoists"],
     description:
-      "Genuine crane components that ensure safe, controlled overhead crane operation.",
+      "High-capacity twin-motor wire rope hoists for the most demanding heavy lifting requirements.",
   },
   {
-    title: "Control Systems",
-    icon: "🎛️",
-    items: ["Radio Remote Controls", "Pendant Switches"],
+    title: "Chain Pulley Blocks",
+    image: "/INDEF-P.png",
+    items: ["INDEF-P Series", "Manual Chain Blocks", "1T – 10T Capacity"],
     description:
-      "Operator control systems for precise, safe management of lifting and crane equipment.",
+      "ISI-marked manual chain pulley blocks offering reliable load handling wherever power is unavailable.",
   },
   {
-    title: "Safety Equipment",
-    icon: "🛡️",
-    items: [
-      "Crane Safety Devices",
-      "Anti-Collision Systems",
-      "Industrial Safety Equipment",
-    ],
+    title: "Manual Chain Hoists",
+    image: "/INDEF-R.png",
+    items: ["INDEF-R Series", "Corrosion-Resistant Hoists", "Stainless Chain"],
     description:
-      "Safety systems that protect personnel and equipment in industrial environments.",
+      "Rugged stainless-chain manual hoists designed for corrosive and washdown environments.",
+  },
+  {
+    title: "Crane Systems",
+    image: "/JIB-Crane.png",
+    items: ["Jib Cranes", "Overhead Cranes", "Crane Components"],
+    description:
+      "Complete crane systems — from jib cranes to overhead gantry setups — for full facility material handling.",
   },
 ];
 
@@ -64,28 +68,38 @@ export default function Products() {
           {categories.map((cat) => (
             <article
               key={cat.title}
-              className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-amber-300 transition-all group"
+              className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg hover:border-amber-300 transition-all group"
             >
-              <div className="text-3xl mb-4">{cat.icon}</div>
-              <h3 className="text-lg font-bold text-[#1e3a5f] mb-2 group-hover:text-amber-600 transition-colors">
-                {cat.title}
-              </h3>
-              <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-                {cat.description}
-              </p>
-              <ul className="space-y-1.5">
-                {cat.items.map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <div className="relative h-52 bg-slate-100 flex items-center justify-center p-4">
+                <Image
+                  src={cat.image}
+                  alt={cat.title}
+                  fill
+                  className="object-contain p-4"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-[#1e3a5f] mb-2 group-hover:text-amber-600 transition-colors">
+                  {cat.title}
+                </h3>
+                <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+                  {cat.description}
+                </p>
+                <ul className="space-y-1.5">
+                  {cat.items.map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </article>
           ))}
 
           {/* CTA Card */}
-          <div className="bg-[#1e3a5f] rounded-xl p-6 flex flex-col justify-between">
+          <div className="bg-[#1e3a5f] rounded-xl p-6 flex flex-col justify-between sm:col-span-2 lg:col-span-1">
             <div>
               <h3 className="text-lg font-bold text-white mb-3">
                 Need a specific product?
