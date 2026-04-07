@@ -44,9 +44,9 @@ export default function HomePage() {
       />
 
       <Hero />
-      <About />
       <Products />
       <IndefSection />
+      <About />
       <WhyTrust />
       <Industries />
       <Leadership />
