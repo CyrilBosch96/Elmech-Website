@@ -2,14 +2,14 @@ export default function About() {
   return (
     <section id="about" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center mb-14">
+        <div className="mb-14">
           <p className="text-amber-600 font-semibold text-sm uppercase tracking-widest mb-3">
             About Us
           </p>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e3a5f] mb-4">
             Trusted by Industry for Over Three Decades
           </h2>
-          <div className="w-16 h-1 bg-amber-500 mx-auto mb-8"></div>
+          <div className="w-12 h-0.5 bg-amber-500"></div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">

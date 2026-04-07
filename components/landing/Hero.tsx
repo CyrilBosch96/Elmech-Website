@@ -60,12 +60,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom wave divider */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <path d="M0 48L1440 48L1440 0C1200 40 960 48 720 40C480 32 240 0 0 0L0 48Z" fill="#ffffff" />
-        </svg>
-      </div>
     </section>
   );
 }

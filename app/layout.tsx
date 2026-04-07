@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import TopBar from "@/components/layout/TopBar";
 import HoistDemo from "@/components/landing/HoistDemo";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-barlow",
   display: "swap",
 });
 
@@ -76,9 +84,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${barlowCondensed.variable}`}>
       <body className="font-sans antialiased">
         <HoistDemo />
+        <TopBar />
         <Header />
         <main>{children}</main>
         <Footer />
