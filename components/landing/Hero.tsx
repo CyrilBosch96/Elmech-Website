@@ -56,7 +56,7 @@ export default function Hero() {
               Get a Quotation
             </Link>
             <a
-              href="https://wa.me/91XXXXXXXXXX"
+              href="https://wa.me/919843019950"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold px-8 py-4 rounded text-base transition-colors text-center"

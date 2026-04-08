@@ -16,7 +16,7 @@ const jsonLd = {
     "Authorized Indef distributor and certified service center supplying material handling equipment, hoists, crane components, and lifting solutions to industrial customers since 1992.",
   url: "https://elmech-equipment.vercel.app",
   email: "elmechin@gmail.com",
-  telephone: "+91XXXXXXXXXX",
+  telephone: "+919843019950",
   foundingDate: "1992",
   areaServed: "India",
   hasOfferCatalog: {
