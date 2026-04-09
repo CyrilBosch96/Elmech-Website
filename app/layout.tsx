@@ -20,6 +20,10 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   title: {
     default:
       "Elmech Equipment Company | Material Handling Equipment Specialists Since 1992",

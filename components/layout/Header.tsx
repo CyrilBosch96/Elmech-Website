@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
@@ -21,13 +22,23 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex flex-col leading-tight">
-            <span className="text-lg md:text-xl font-bold tracking-tight text-white">
-              Elmech Equipment Company
-            </span>
-            <span className="text-xs text-amber-400 font-medium tracking-wide">
-              Material Handling Specialists Since 1992
-            </span>
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="Elmech Equipment Company"
+              width={44}
+              height={44}
+              className="rounded bg-white p-0.5"
+              priority
+            />
+            <div className="flex flex-col leading-tight">
+              <span className="text-lg md:text-xl font-bold tracking-tight text-white">
+                Elmech Equipment Company
+              </span>
+              <span className="text-xs text-amber-400 font-medium tracking-wide">
+                Material Handling Specialists Since 1992
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
