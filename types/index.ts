@@ -1,19 +1,26 @@
 export interface ProductItem {
   id: string;
-  description: string;
-  groupCategory: string;
-  section: string;
-  code: string;
-  capacity: string;
-  mrp: number;
-  lift: string;
-  unit: string;
-  active: boolean;
+  category: string;
+  series: string;
+  product_name: string;
+  capacity_tonnes: number | null;
+  lift_height_metres: number | null;
+  suspension_type: string | null;
+  trolley_range: string | null;
+  duty_class: string | null;
+  speed_type: string | null;
+  indef_code: string | null;
+  mrp_inr: number;
+  notes: string | null;
 }
 
 export interface QuotationProduct {
   productId: string;
   productName: string;
+  capacityTonnes: number | null;
+  liftHeightMetres: number | null;
+  suspensionType: string | null;
+  indefCode: string | null;
   quantity: number;
   mrpEach: number;
   subtotal: number;

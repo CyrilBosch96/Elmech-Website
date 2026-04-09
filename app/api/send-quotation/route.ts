@@ -53,10 +53,14 @@ export async function POST(req: NextRequest) {
       }
       quotationProducts.push({
         productId: item.productId,
-        productName: product.description,
+        productName: product.product_name,
+        capacityTonnes: product.capacity_tonnes,
+        liftHeightMetres: product.lift_height_metres,
+        suspensionType: product.suspension_type,
+        indefCode: product.indef_code,
         quantity: item.quantity,
-        mrpEach: product.mrp,
-        subtotal: product.mrp * item.quantity,
+        mrpEach: product.mrp_inr,
+        subtotal: product.mrp_inr * item.quantity,
       });
     }
 
