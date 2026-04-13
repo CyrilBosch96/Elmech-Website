@@ -94,7 +94,6 @@ export async function GET(req: NextRequest) {
     if (lift) list = list.filter((p) => String(p.lift_height_metres) === lift);
     if (list.length === 1) {
       const p = list[0];
-      // Return only non-price fields for the UI
       return NextResponse.json({
         id: p.id,
         product_name: p.product_name,
@@ -107,6 +106,16 @@ export async function GET(req: NextRequest) {
         speed_type: p.speed_type,
         indef_code: p.indef_code,
         notes: p.notes,
+      });
+    }
+    // Multiple variants share the same spec — return them for the user to choose
+    if (list.length > 1) {
+      return NextResponse.json({
+        variants: list.map((p) => ({
+          id: p.id,
+          product_name: p.product_name,
+          notes: p.notes,
+        })),
       });
     }
     return NextResponse.json(null);

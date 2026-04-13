@@ -40,6 +40,12 @@ interface ResolvedProduct {
   notes: string | null;
 }
 
+interface ProductVariant {
+  id: string;
+  product_name: string;
+  notes: string | null;
+}
+
 interface RowState {
   category: string;
   series: string;
@@ -48,6 +54,7 @@ interface RowState {
   trolleyRange: string;
   lift: string;
   speedType: string;
+  variantId: string;
 
   seriesList: string[];
   capacities: (number | null)[];
@@ -55,14 +62,15 @@ interface RowState {
   trolleyRanges: string[];
   lifts: (number | null)[];
   speedTypes: string[];
+  variants: ProductVariant[];
   resolved: ResolvedProduct | null;
 
   loading: string | null;
 }
 
 const EMPTY_ROW: RowState = {
-  category: "", series: "", capacity: "", suspension: "", trolleyRange: "", lift: "", speedType: "",
-  seriesList: [], capacities: [], suspensions: [], trolleyRanges: [], lifts: [], speedTypes: [],
+  category: "", series: "", capacity: "", suspension: "", trolleyRange: "", lift: "", speedType: "", variantId: "",
+  seriesList: [], capacities: [], suspensions: [], trolleyRanges: [], lifts: [], speedTypes: [], variants: [],
   resolved: null, loading: null,
 };
 
@@ -127,6 +135,7 @@ export default function EnquiryForm() {
   rowStatesRef.current = rowStates;
 
   const [submitting, setSubmitting] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -259,7 +268,7 @@ export default function EnquiryForm() {
     const cap = overrides?.cap ?? row.capacity;
     const susp = overrides?.suspension ?? row.suspension;
     const tr = overrides?.trolleyRange ?? row.trolleyRange;
-    patchRow(index, { lift, speedType: "", speedTypes: [], resolved: null, loading: "speedTypes" });
+    patchRow(index, { lift, speedType: "", speedTypes: [], variantId: "", variants: [], resolved: null, loading: "speedTypes" });
 
     // Check if speed types are needed
     const speedQs = new URLSearchParams({ speedTypes: "true", category: cat, series: ser, capacity: cap, suspension: susp, lift });
@@ -279,22 +288,50 @@ export default function EnquiryForm() {
       if (data?.id) {
         patchRow(index, { resolved: data, loading: null });
         setValue(`products.${index}.productId`, data.id);
+      } else if (data?.variants) {
+        patchRow(index, { variants: data.variants, loading: null });
       } else {
         patchRow(index, { loading: null });
       }
     }
   }, [setValue, patchRow]);
 
+  const onVariantChange = useCallback((index: number, variantId: string) => {
+    const row = rowStatesRef.current[index];
+    if (!variantId) {
+      patchRow(index, { variantId: "", resolved: null });
+      setValue(`products.${index}.productId`, "");
+      return;
+    }
+    const variant = row.variants.find((v) => v.id === variantId);
+    if (!variant) return;
+    const resolved: ResolvedProduct = {
+      id: variant.id,
+      product_name: variant.product_name,
+      series: row.series,
+      capacity_tonnes: row.capacity ? parseFloat(row.capacity) : null,
+      lift_height_metres: row.lift ? parseFloat(row.lift) : null,
+      suspension_type: row.suspension || null,
+      trolley_range: row.trolleyRange || null,
+      indef_code: null,
+      notes: variant.notes,
+    };
+    patchRow(index, { variantId, resolved });
+    setValue(`products.${index}.productId`, variantId);
+  }, [patchRow, setValue]);
+
   const onSpeedTypeChange = useCallback(async (index: number, speedType: string) => {
     setValue(`products.${index}.productId`, "");
     const row = rowStatesRef.current[index];
-    patchRow(index, { speedType, resolved: null, loading: "resolving" });
+    patchRow(index, { speedType, variantId: "", variants: [], resolved: null, loading: "resolving" });
     const qs = new URLSearchParams({ resolve: "true", category: row.category, series: row.series, capacity: row.capacity, suspension: row.suspension, lift: row.lift, speedType });
     if (row.trolleyRange) qs.set("trolleyRange", row.trolleyRange);
     const data = await fetch(`/api/products?${qs}`).then((r) => r.json());
     if (data?.id) {
       patchRow(index, { resolved: data, loading: null });
       setValue(`products.${index}.productId`, data.id);
+    } else if (data?.variants) {
+      patchRow(index, { variants: data.variants, loading: null });
     } else {
       patchRow(index, { loading: null });
     }
@@ -336,6 +373,33 @@ export default function EnquiryForm() {
       setSubmitting(false);
     }
   };
+
+  const handleDownload = handleSubmit(async (data: FormValues) => {
+    setDownloading(true);
+    setServerError(null);
+    try {
+      const res = await fetch("/api/download-quotation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to generate quotation");
+      const blob = await res.blob();
+      const disposition = res.headers.get("Content-Disposition") ?? "";
+      const match = disposition.match(/filename="([^"]+)"/);
+      const filename = match ? match[1] : "quotation.html";
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setServerError("Failed to download quotation. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  });
 
   // ── Success ─────────────────────────────────────────────────────────────────
 
@@ -420,6 +484,7 @@ export default function EnquiryForm() {
               !isTrolleyType(row.suspension) ? !!row.suspension : (!!row.trolleyRange || row.trolleyRanges.length === 0)
             );
             const showSpeedType  = row.speedTypes.length > 1 && !!row.lift;
+            const showVariant    = row.variants.length > 1 && !row.resolved;
 
             return (
               <div key={field.id} className="border border-slate-200 rounded-xl overflow-hidden">
@@ -534,6 +599,31 @@ export default function EnquiryForm() {
                     </div>
                   )}
 
+                  {/* Level 5: Variant selection (ISI Marked, Loose Chain, etc.) */}
+                  {showVariant && (
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5">Variant</label>
+                      <div className="space-y-2">
+                        {row.variants.map((v) => (
+                          <label key={v.id} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${row.variantId === v.id ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-white hover:border-slate-300"}`}>
+                            <input
+                              type="radio"
+                              name={`variant-${field.id}`}
+                              value={v.id}
+                              checked={row.variantId === v.id}
+                              onChange={() => onVariantChange(index, v.id)}
+                              className="mt-0.5 accent-amber-500"
+                            />
+                            <div>
+                              <p className="text-sm font-semibold text-[#1e3a5f] leading-snug">{v.product_name}</p>
+                              {v.notes && <p className="text-xs text-slate-500 mt-0.5">{v.notes}</p>}
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Resolved product + Qty */}
                   {row.loading === "resolving" && (
                     <div className="flex items-center gap-2 text-sm text-slate-400 py-1">
@@ -599,19 +689,42 @@ export default function EnquiryForm() {
         <div className="bg-red-50 border border-red-300 text-red-700 text-sm rounded-xl px-5 py-4">{serverError}</div>
       )}
 
-      <button type="submit" disabled={submitting}
-        className="w-full bg-[#1e3a5f] hover:bg-[#152b47] disabled:bg-slate-400 text-white font-bold text-base px-8 py-4 rounded-xl transition-colors flex items-center justify-center gap-3"
-      >
-        {submitting ? (
-          <>
-            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
-            Sending Quotation…
-          </>
-        ) : "Request Quotation →"}
-      </button>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button type="submit" disabled={submitting || downloading}
+          className="flex-1 bg-[#1e3a5f] hover:bg-[#152b47] disabled:bg-slate-400 text-white font-bold text-base px-8 py-4 rounded-xl transition-colors flex items-center justify-center gap-3"
+        >
+          {submitting ? (
+            <>
+              <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Sending Quotation…
+            </>
+          ) : "Request Quotation →"}
+        </button>
+
+        <button type="button" onClick={handleDownload} disabled={submitting || downloading}
+          className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 disabled:bg-slate-400 text-white font-bold text-base px-8 py-4 rounded-xl transition-colors flex items-center justify-center gap-3"
+        >
+          {downloading ? (
+            <>
+              <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Generating…
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download Quotation
+            </>
+          )}
+        </button>
+      </div>
     </form>
   );
 }
